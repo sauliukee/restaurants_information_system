@@ -72,9 +72,11 @@
                                 {{ __('Manage Restaurant') }}
                             </x-dropdown-link>
                         @else
-                            <x-dropdown-link :href="route('user.reservations.index')">
-                                {{ __('Manage Your Reservations') }}
-                            </x-dropdown-link>
+                            @isset($restaurant)
+                                <x-dropdown-link :href="route('user.reservations.index', ['restaurant' => $restaurant->id])">
+                                    {{ __('Manage Your Reservations') }}
+                                </x-dropdown-link>
+                            @endisset
                         @endif
 
                         <!-- Authentication -->
@@ -82,11 +84,10 @@
                             @csrf
                             <x-dropdown-link :href="route('logout')"
                                              onclick="event.preventDefault();
-                              this.closest('form').submit();">
+                                this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
-
                     </x-slot>
                 </x-dropdown>
             @else

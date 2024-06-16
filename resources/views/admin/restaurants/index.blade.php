@@ -15,7 +15,6 @@
                 <th scope="col" class="px-6 py-3">Name</th>
                 <th scope="col" class="px-6 py-3">Image</th>
                 <th scope="col" class="px-6 py-3">Description</th>
-                <th scope="col" class="px-6 py-3">Actions</th>
             </tr>
             </thead>
             <tbody>
