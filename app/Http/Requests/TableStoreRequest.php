@@ -28,6 +28,8 @@ class TableStoreRequest extends FormRequest
             'guest_number' => ['required'],
             'status' => ['required'],
             'location' => ['required'],
+            'restaurant_id' => 'required|exists:restaurants,id'
+
         ];
     }
 }

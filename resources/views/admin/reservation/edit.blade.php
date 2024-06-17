@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex m-2 p-2">
                 <a href="{{ route('admin.reservations.create') }}"
-                   class="px-4 py-2 bg-purple-400 hover:bg-purple-700 rounded-lg text-white">Table Index</a>
+                   class="px-4 py-2 bg-purple-400 hover:bg-purple-700 rounded-lg text-white">Reservation Index</a>
             </div>
             <div class="m-2 p-2 bg-purple-100 rounded">
                 <div class="space-y-8 divide-y divide-gray-200 w-1/2 mt-10">
@@ -59,7 +59,7 @@
                         <div class="sm:col-span-6">
                             <label for="res_date" class="block text-sm font-medium text-gray-700">Reservation Date</label>
                             <div class="mt-1">
-                                <input type="text" id="res_date" name="res_date" value="{{ $reservation->res_date->format('Y-m-d\TH:i:s') }}"
+                                <input type="text" id="res_date" name="res_date" value="{{ $reservation->res_date->format('Y-m-d H:i') }}"
                                        class="block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5 @error('res_date') border-red-400 @enderror" />
                             </div>
                             @error('res_date')
@@ -77,12 +77,11 @@
                             @enderror
                         </div>
                         <div class="sm:col-span-6 pt-5">
-                            <label for="status" class="block text-sm font-medium text-gray-700">Table</label>
+                            <label for="table_id" class="block text-sm font-medium text-gray-700">Table</label>
                             <div class="mt-1">
                                 <select id="table_id" name="table_id" class="form-multiselect block w-full mt-1">
                                     @foreach($tables as $table)
-                                        <option value="{{ $table->id }}" @selected($table->id == $reservation->table_id)>{{ $table->name }}
-                                            ({{ $table->guest_number }} Guests)</option>
+                                        <option value="{{ $table->id }}" data-restaurant="{{ $table->restaurant_id }}" @selected($table->id == $reservation->table_id)>{{ $table->name }} ({{ $table->guest_number }} Guests) - {{ $table->restaurant->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

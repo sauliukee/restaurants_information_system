@@ -1,3 +1,5 @@
+<!-- resources/views/frontend/reservations/step-one.blade.php -->
+
 <x-guest-layout>
     <div class="container w-full px-5 py-6 mx-auto">
         <div class="flex items-center min-h-screen bg-gray-50">
@@ -15,6 +17,10 @@
                             <form method="POST" action="{{ route('reservations.store.step.one', ['restaurant' => $restaurant->id]) }}">
                                 @csrf
                                 <div class="mb-4">
+                                    <label for="restaurant_name" class="block text-sm font-medium text-gray-700">Restaurant</label>
+                                    <input type="text" id="restaurant_name" name="restaurant_name" value="{{ $restaurant->name }}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm sm:text-sm" disabled />
+                                </div>
+                                <div class="mb-4">
                                     <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
                                     <input type="text" id="first_name" name="first_name" value="{{ $reservation->first_name ?? '' }}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm sm:text-sm" />
                                     @error('first_name') <div class="text-sm text-red-400">{{ $message }}</div> @enderror
@@ -31,7 +37,7 @@
                                 </div>
                                 <div class="mb-4">
                                     <label for="tel_number" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                    <input type="text" id="tel_number" name="tel_number" value="{{ $reservation->tel_number ?? ''}}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm sm:text-sm" />
+                                    <input type="text" id="tel_number" name="tel_number" value="{{ $reservation->tel_number ?? '' }}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm sm:text-sm" />
                                     @error('tel_number') <div class="text-sm text-red-400">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="mb-4">

@@ -11,7 +11,7 @@
             <div class="flex flex-col items-center mt-12 text-center">
             <span class="relative inline-flex w-full md:w-auto">
               <a href="{{ route('restaurants.index') }}" type="button" class="inline-flex items-center justify-center px-6 py-2 text-base font-bold leading-6 text-white bg-pink-200 rounded-full lg:w-full md:w-auto hover:bg-pink-500 focus:outline-none">
-                 Make your Reservation
+                 Explore Restaurants
 </a>
 
 
@@ -79,31 +79,4 @@
     </section>
 
     <!-- Our Menu Section -->
-    <section class="bg-pink-100">
-        <div class="text-center">
-            <h3 class="text-2xl font-bold">Our Menu</h3>
-            <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">TODAY'S SPECIALS</h2>
-        </div>
-        <div class="container w-full px-5 py-6 mx-auto">
-            @if($specials)
-                <div class="grid lg:grid-cols-4 gap-y-6">
-                    @foreach($specials->menus as $menu)
-                        <div class="max-w-xs mx-4 mb-2 rounded-lg shadow-lg">
-                            <img class="w-full h-48"
-                                 src="{{ @Storage::url($menu->image) }}" alt="Image" />
-                            <div class="px-6 py-4">
-                                <h4 class="mb-3 text-xl font-semibold tracking-tight text-pink-300 uppercase">{{ $menu->name }}</h4>
-                                <p class="leading-normal text-gray-700">{{ $menu->description }}</p>
-                            </div>
-                            <div class="flex items-center justify-between p-4">
-                                <span class="text-xl text-pink-300">{{ $menu->price }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <p class="text-center text-gray-600">No special menus available at the moment.</p>
-            @endif
-        </div>
-    </section>
 </x-guest-layout>

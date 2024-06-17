@@ -12,9 +12,22 @@
             </div>
             <div class="m-2 p-2 bg-purple-100 rounded">
                 <div class="space-y-8 divide-y divide-gray-200 w-1/2 mt-10">
-                    <form method="POST" action="{{ route('user.reservations.update', $reservation->id) }}">
+                    <form method="POST" action="{{ route('user.reservations.update', ['restaurant' => $reservation->restaurant_id, 'reservation' => $reservation->id]) }}">
                         @csrf
                         @method('PUT')
+                        <div class="sm:col-span-6">
+                            <label for="restaurant_id" class="block text-sm font-medium text-gray-700">Restaurant</label>
+                            <div class="mt-1">
+                                <select id="restaurant_id" name="restaurant_id" class="form-multiselect block w-full mt-1">
+                                    @foreach($restaurants as $restaurant)
+                                        <option value="{{ $restaurant->id }}" {{ $restaurant->id == $reservation->restaurant_id ? 'selected' : '' }}>{{ $restaurant->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @error('restaurant_id')
+                            <div class="text-sm text-red-400">{{ $message }}</div>
+                            @enderror
+                        </div>
                         <div class="sm:col-span-6">
                             <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
                             <div class="mt-1">
@@ -54,7 +67,7 @@
                         <div class="sm:col-span-6">
                             <label for="res_date" class="block text-sm font-medium text-gray-700">Reservation Date</label>
                             <div class="mt-1">
-                                <input type="text" id="res_date" name="res_date" value="{{ $reservation->res_date->format('Y-m-d\TH:i:s') }}" class="block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5 @error('res_date') border-red-400 @enderror" />
+                                <input type="text" id="res_date" name="res_date" value="{{ $reservation->res_date->format('Y-m-d H:i') }}" class="block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5 @error('res_date') border-red-400 @enderror" />
                             </div>
                             @error('res_date')
                             <div class="text-sm text-red-400">{{ $message }}</div>
@@ -70,11 +83,11 @@
                             @enderror
                         </div>
                         <div class="sm:col-span-6 pt-5">
-                            <label for="status" class="block text-sm font-medium text-gray-700">Table</label>
+                            <label for="table_id" class="block text-sm font-medium text-gray-700">Table</label>
                             <div class="mt-1">
                                 <select id="table_id" name="table_id" class="form-multiselect block w-full mt-1">
                                     @foreach($tables as $table)
-                                        <option value="{{ $table->id }}" {{ $table->id == $reservation->table_id ? 'selected' : '' }}>{{ $table->name }} ({{ $table->guest_number }} Guests)</option>
+                                        <option value="{{ $table->id }}" data-restaurant="{{ $table->restaurant_id }}" {{ $table->id == $reservation->table_id ? 'selected' : '' }}>{{ $table->name }} ({{ $table->guest_number }} Guests) - {{ $table->restaurant->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -82,7 +95,6 @@
                             <div class="text-sm text-red-400">{{ $message }}</div>
                             @enderror
                         </div>
-                        <input type="hidden" name="restaurant_id" value="{{ $reservation->restaurant_id }}">
                         <div class="mt-6 p-4">
                             <button type="submit" class="px-4 py-2 bg-purple-400 hover:bg-purple-700 rounded-lg text-white">Update</button>
                         </div>
@@ -101,6 +113,25 @@
                 dateFormat: "Y-m-d H:i",
                 minDate: "today",
                 time_24hr: true
+            });
+
+            document.getElementById('restaurant_id').addEventListener('change', function() {
+                var selectedRestaurant = this.value;
+                var tableSelect = document.getElementById('table_id');
+
+                Array.from(tableSelect.options).forEach(option => {
+                    if (option.value === "") {
+                        option.style.display = 'block';
+                    } else {
+                        if (option.getAttribute('data-restaurant') == selectedRestaurant) {
+                            option.style.display = 'block';
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    }
+                });
+
+                tableSelect.value = "";
             });
         });
     </script>

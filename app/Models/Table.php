@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Table extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'guest_number', 'status', 'location'];
+    protected $fillable = ['name', 'guest_number', 'status', 'location','restaurant_id'];
 
     protected $casts = [
         'status' => TableStatus::class,
@@ -21,6 +21,11 @@ class Table extends Model
 
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function restaurant()
+    {
+        return $this->belongsTo(Restaurant::class);
     }
 
 }

@@ -28,27 +28,9 @@
             @if (Auth::check() && Auth::user()->is_admin)
                 <a class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 hover:text-purple-400"
                    href="{{ route('admin.restaurants.index') }}">Restaurants</a>
-                @isset($restaurant)
-                    <a class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 hover:text-purple-400"
-                       href="{{ route('admin.menus.index', ['restaurant' => $restaurant->id]) }}">Our Menu</a>
-                    <a class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 hover:text-purple-400"
-                       href="{{ route('admin.reservations.index', ['restaurant' => $restaurant->id]) }}">Make Reservation</a>
-                @else
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">Our Menu</span>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">Make Reservation</span>
-                @endisset
             @else
                 <a class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 hover:text-purple-400"
                    href="{{ route('restaurants.index') }}">Restaurants</a>
-                @isset($restaurant)
-                    <a class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 hover:text-purple-400"
-                       href="{{ route('menus.index', ['restaurant' => $restaurant->id]) }}">Our Menu</a>
-                    <a class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 hover:text-purple-400"
-                       href="{{ route('reservations.step.one', ['restaurant' => $restaurant->id]) }}">Make Reservation</a>
-                @else
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">Our Menu</span>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">Make Reservation</span>
-                @endisset
             @endif
 
             @auth
@@ -72,12 +54,13 @@
                                 {{ __('Manage Restaurant') }}
                             </x-dropdown-link>
                         @else
-                            @isset($restaurant)
+                            @if ($restaurant = \App\Models\Restaurant::first())
                                 <x-dropdown-link :href="route('user.reservations.index', ['restaurant' => $restaurant->id])">
                                     {{ __('Manage Your Reservations') }}
                                 </x-dropdown-link>
-                            @endisset
+                            @endif
                         @endif
+
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">

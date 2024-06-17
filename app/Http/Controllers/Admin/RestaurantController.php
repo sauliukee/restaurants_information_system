@@ -10,69 +10,68 @@ use Illuminate\Support\Facades\Storage;
 
 class RestaurantController extends Controller
 {
-public function index()
-{
-$restaurants = Restaurant::all();
-return view('restaurants.index', compact('restaurants'));
-}
+    public function index()
+    {
+        $restaurants = Restaurant::all();
+        return view('admin.restaurants.index', compact('restaurants'));
+    }
 
-public function create()
-{
-return view('admin.restaurants.create');
-}
+    public function create()
+    {
+        return view('admin.restaurants.create');
+    }
 
-public function store(RestaurantStoreRequest $request)
-{
-$imagePath = $request->file('image')->store('restaurants', 'public');
+    public function store(RestaurantStoreRequest $request)
+    {
+        $imagePath = $request->file('image')->store('restaurants', 'public');
 
-Restaurant::create([
-'name' => $request->name,
-'description' => $request->description,
-'image' => $imagePath,
-]);
+        Restaurant::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
 
-return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant created successfully.');
-}
+        return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant created successfully.');
+    }
 
-public function show($id)
-{
-$restaurant = Restaurant::findOrFail($id);
-return view('restaurants.show', compact('restaurant'));
-}
+    public function show($id)
+    {
+        $restaurant = Restaurant::findOrFail($id);
+        return view('admin.restaurants.show', compact('restaurant'));
+    }
 
-public function edit(Restaurant $restaurant)
-{
-return view('admin.restaurants.edit', compact('restaurant'));
-}
+    public function edit(Restaurant $restaurant)
+    {
+        return view('admin.restaurants.edit', compact('restaurant'));
+    }
 
-public function update(Request $request, Restaurant $restaurant)
-{
-$request->validate([
-'name' => 'required',
-'description' => 'required'
-]);
+    public function update(Request $request, Restaurant $restaurant)
+    {
+        $request->validate([
+            'name' => 'required',
+            'description' => 'required'
+        ]);
 
-$imagePath = $restaurant->image;
-if($request->hasFile('image')){
-Storage::delete($restaurant->image);
-$imagePath = $request->file('image')->store('restaurants', 'public');
-}
+        $imagePath = $restaurant->image;
+        if ($request->hasFile('image')) {
+            Storage::delete($restaurant->image);
+            $imagePath = $request->file('image')->store('restaurants', 'public');
+        }
 
-$restaurant->update([
-'name' => $request->name,
-'description' => $request->description,
-'image' => $imagePath,
-]);
+        $restaurant->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
 
-return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant updated successfully.');
-}
+        return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant updated successfully.');
+    }
 
-public function destroy(Restaurant $restaurant)
-{
-$restaurant->menus()->detach();
-Storage::delete($restaurant->image);
-$restaurant->delete();
+    public function destroy(Restaurant $restaurant)
+    {
+        Storage::delete($restaurant->image);
+        $restaurant->delete();
 
-return redirect()->route('admin.restaurants.index')->with('danger', 'Restaurant deleted successfully.');
-}
+        return redirect()->route('admin.restaurants.index')->with('danger', 'Restaurant deleted successfully.');
+    }
 }

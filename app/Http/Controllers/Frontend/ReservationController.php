@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Rules\DateBetween;
 use App\Rules\TimeBetween;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
@@ -35,12 +36,14 @@ class ReservationController extends Controller
         if (empty($request->session()->get('reservation'))) {
             $reservation = new Reservation();
             $reservation->fill($validated);
-            $reservation->restaurant_id = $restaurantId; // Add restaurant_id
+            $reservation->restaurant_id = $restaurantId;
+            $reservation->user_id = Auth::id();
             $request->session()->put('reservation', $reservation);
         } else {
             $reservation = $request->session()->get('reservation');
             $reservation->fill($validated);
-            $reservation->restaurant_id = $restaurantId; // Add restaurant_id
+            $reservation->restaurant_id = $restaurantId;
+            $reservation->user_id = Auth::id();
             $request->session()->put('reservation', $reservation);
         }
 
@@ -50,14 +53,15 @@ class ReservationController extends Controller
     public function stepTwo(Request $request, $restaurantId)
     {
         $reservation = $request->session()->get('reservation');
-        $restaurant = Restaurant::findOrFail($restaurantId); // Add this line
-        $res_table_ids = Reservation::orderBy('res_date')->get()->filter(function($value) use ($reservation) {
+        $restaurant = Restaurant::findOrFail($restaurantId);
+        $res_table_ids = Reservation::orderBy('res_date')->get()->filter(function ($value) use ($reservation) {
             return $value->res_date->format('Y-m-d') == $reservation->res_date->format('Y-m-d');
         })->pluck('table_id');
         $tables = Table::where('status', TableStatus::Available)
             ->where('guest_number', '>=', $reservation->guest_number)
+            ->where('restaurant_id', $restaurantId)
             ->whereNotIn('id', $res_table_ids)->get();
-        return view('reservations.step-two', compact('reservation', 'tables', 'restaurant')); // Add restaurant to compact
+        return view('reservations.step-two', compact('reservation', 'tables', 'restaurant'));
     }
 
     public function storeStepTwo(Request $request, $restaurantId)
@@ -91,14 +95,58 @@ class ReservationController extends Controller
             'table_id' => ['required']
         ]);
 
-        Reservation::create($validated);
+        $reservation = new Reservation();
+        $reservation->fill($validated);
+        $reservation->restaurant_id = $request->input('restaurant_id');
+        $reservation->user_id = Auth::id();
+        $reservation->save();
 
         return to_route('reservations.index')->with('success', 'Reservation created successfully.');
     }
 
     public function index()
     {
-        $reservations = Reservation::all();
+        $reservations = Reservation::where('user_id', Auth::id())->get();
         return view('reservations.index', compact('reservations'));
+    }
+
+    public function edit(Reservation $reservation)
+    {
+        if ($reservation->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        $tables = Table::all();
+        return view('reservations.edit', compact('reservation', 'tables'));
+    }
+
+    public function update(Request $request, Reservation $reservation)
+    {
+        if ($reservation->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'first_name' => ['required'],
+            'last_name' => ['required'],
+            'email' => ['required', 'email'],
+            'res_date' => ['required', 'date', new DateBetween(), new TimeBetween()],
+            'tel_number' => ['required'],
+            'guest_number' => ['required'],
+            'table_id' => ['required']
+        ]);
+
+        $reservation->update($validated);
+
+        return redirect()->route('reservations.index')->with('success', 'Reservation updated successfully.');
+    }
+
+    public function destroy(Reservation $reservation)
+    {
+        if ($reservation->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        $reservation->delete();
+
+        return redirect()->route('reservations.index')->with('danger', 'Reservation deleted successfully.');
     }
 }
